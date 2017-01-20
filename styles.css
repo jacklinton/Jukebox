@@ -4,8 +4,8 @@ body {
 
 .audioFile {
 	display: inline-block;
-	width: 300px;
-	height: 75px;
+	width: 250px;
+	height: 40px;
 	background-color: grey;
 	float: left;
 	left: 0%;
