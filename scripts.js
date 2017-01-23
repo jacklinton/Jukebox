@@ -1,6 +1,9 @@
 var audioFileList = []
 var trackCounter = 0
 
+	
+
+
 
 function Jukebox(){
 	getAudioPlayer()
@@ -11,19 +14,84 @@ function Jukebox(){
 	document.getElementById("playerBody").innerHTML = "<audio type='audio/mp3' controls id='audioPlayer' class='audioElement'></audio>"
 	this.audioPlayer = document.getElementById("audioPlayer")
 	
-	newAudioFile("1. Truckin", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t01.mp3")
-	newAudioFile("2. Loser", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t02.mp3")
-	newAudioFile("3. Hard To Handle", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t03.mp3")
-	newAudioFile("4. Me And Bobby McGee", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t04.mp3")
-	newAudioFile("5. Cold Rain And Snow", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t05.mp3")
-	newAudioFile("6. The Rub", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t06.mp3")
-	newAudioFile("7. Playing In The Band", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t07.mp3")
-	newAudioFile("8. Friend Of The Devil", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t08.mp3")
-	newAudioFile("9. China Cat Sunflower ->", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t09.mp3")
-	newAudioFile("10. I Know You Rider", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t10.mp3")
-	newAudioFile("11. Casey Jones", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t11.mp3")
+	this.playButton = document.createElement("div")
+		playButton.setAttribute("id", "playButton")
+		playButton.setAttribute("class", "btn btn-primary")
+		document.getElementById("playerBody").appendChild(playButton)
+		playButton.innerHTML = "<i class='glyphicon glyphicon-play-circle'</i>"
+		playButton.addEventListener("click", function(){
+			this.nextIndex = audioFileList.findIndex(i => i.tracklocation == audioPlayer.src) + 1
+			if (this.nextIndex == 0) {
+				audioPlayer.src = audioFileList[0].tracklocation
+				audioPlayer.play()
+				document.getElementById("track1").classList.add("currentTrack")
+			}
+			else {
+				audioPlayer.play()
+			}
+		})
 
-	
+	this.pauseButton = document.createElement("div")
+		pauseButton.setAttribute("id", "pauseButton")
+		pauseButton.setAttribute("class", "btn btn-primary")
+		document.getElementById("playerBody").appendChild(pauseButton)
+		pauseButton.innerHTML = "<i class= 'glyphicon glyphicon-pause'></i>"
+		pauseButton.addEventListener("click", function(){
+			audioPlayer.pause()
+		})
+
+	this.previousButton = document.createElement("div")
+		previousButton.setAttribute("id", "nextButton")
+		previousButton.setAttribute("class", "btn btn-primary")
+		document.getElementById("playerBody").appendChild(previousButton)
+		previousButton.innerHTML = "<i class='glyphicon glyphicon-step-backward'</i>"
+		previousButton.addEventListener("click", function(){
+			this.nextIndex = audioFileList.findIndex(i => i.tracklocation == audioPlayer.src)
+			if (this.nextIndex != -1 && this.nextIndex != 0) {
+				audioPlayer.src = audioFileList[this.nextIndex - 1].tracklocation
+				audioPlayer.play()
+				document.getElementById("track" + (this.nextIndex + 1)).classList.remove("currentTrack")
+				document.getElementById("track" + this.nextIndex).classList.add("currentTrack")
+			}
+			else if (this.nextIndex == 0){
+				audioPlayer.src = audioFileList[audioFileList.length - 1].tracklocation
+				audioPlayer.play()
+				document.getElementById("track" + (this.nextIndex + 1)).classList.remove("currentTrack")
+				document.getElementById("track" + audioFileList.length).classList.add("currentTrack")
+			}
+			else {
+				audioPlayer.src = audioFileList[audioFileList.length - 1].tracklocation
+				audioPlayer.play()
+				document.getElementById("track" + audioFileList.length).classList.add("currentTrack")
+			}
+		})
+
+	this.nextButton = document.createElement("div")
+		nextButton.setAttribute("id", "nextButton")
+		nextButton.setAttribute("class", "btn btn-primary")
+		document.getElementById("playerBody").appendChild(nextButton)
+		nextButton.innerHTML = "<i class='glyphicon glyphicon-step-forward'</i>"
+		nextButton.addEventListener("click", function(){
+			this.nextIndex = audioFileList.findIndex(i => i.tracklocation == audioPlayer.src) + 1
+			if (this.nextIndex != 0 && this.nextIndex != audioFileList.length) {
+				audioPlayer.src = audioFileList[this.nextIndex].tracklocation
+				audioPlayer.play()
+				document.getElementById("track" + this.nextIndex).classList.remove("currentTrack")
+				document.getElementById("track" + (this.nextIndex + 1)).classList.add("currentTrack")
+			}
+			else if (this.nextIndex == audioFileList.length){
+				audioPlayer.src = audioFileList[0].tracklocation
+				audioPlayer.play()
+				document.getElementById("track" + (this.nextIndex)).classList.remove("currentTrack")
+				document.getElementById("track1").classList.add("currentTrack")
+			}
+			else {
+				audioPlayer.src = audioFileList[0].tracklocation
+				audioPlayer.play()
+				document.getElementById("track1").classList.add("currentTrack")
+			}
+		})
+
 	this.newTrackButton = document.createElement("div")
 		newTrackButton.setAttribute("id", "newTrackButton")
 		newTrackButton.setAttribute("class", "btn btn-primary")
@@ -35,24 +103,6 @@ function Jukebox(){
 			newAudioFile(newTrack, newLocation)
 		})
 	
-	this.pauseButton = document.createElement("div")
-		pauseButton.setAttribute("id", "pauseButton")
-		pauseButton.setAttribute("class", "btn btn-primary")
-		document.getElementById("playerBody").appendChild(pauseButton)
-		pauseButton.innerHTML = "<i class= 'glyphicon glyphicon-pause'></i>"
-		pauseButton.addEventListener("click", function(){
-			audioPlayer.pause()
-		})
-
-	this.playButton = document.createElement("div")
-		playButton.setAttribute("id", "playButton")
-		playButton.setAttribute("class", "btn btn-primary")
-		document.getElementById("playerBody").appendChild(playButton)
-		playButton.innerHTML = "<i class='glyphicon glyphicon-play-circle'</i>"
-		playButton.addEventListener("click", function(){
-			audioPlayer.play()
-		})
-
 	this.downloadButton = document.createElement("div")
 		downloadButton.setAttribute("id", "downloadButton")
 		downloadButton.setAttribute("class", "btn btn-primary")
@@ -61,6 +111,22 @@ function Jukebox(){
 		downloadButton.addEventListener("click", function(){
 			audioPlayer.download()
 		})
+
+	
+	
+
+	newAudioFile("Truckin", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t01.mp3")
+	newAudioFile("Loser", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t02.mp3")
+	newAudioFile("Hard To Handle", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t03.mp3")
+	newAudioFile("Me And Bobby McGee", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t04.mp3")
+	newAudioFile("Cold Rain And Snow", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t05.mp3")
+	newAudioFile("The Rub", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t06.mp3")
+	newAudioFile("Playing In The Band", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t07.mp3")
+	newAudioFile("Friend Of The Devil", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t08.mp3")
+	newAudioFile("China Cat Sunflower ->", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t09.mp3")
+	newAudioFile("I Know You Rider", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t10.mp3")
+	newAudioFile("Casey Jones", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t11.mp3")
+
 	}
 
 
@@ -83,7 +149,7 @@ function Jukebox(){
 		trackID = newDiv.getAttribute("id")
 		newDiv.classList.add("audioFile")
 		document.getElementById("playList").appendChild(newDiv)
-		newDiv.innerHTML = "<h4>" + this.trackname + "</h4>"
+		newDiv.innerHTML = "<h4>" + trackCounter + ". " + this.trackname + "</h4>"
 
 		makeClickable(this.tracklocation, this.trackID)
 	
@@ -102,7 +168,7 @@ function Jukebox(){
 		}
 	}
 
-	function newAudioFile (trackname, tracklocation){
+	function newAudioFile(trackname, tracklocation){
 		this.audioFile = new AddAudioFile(trackname, tracklocation)
 		audioFileList.push(this.audioFile)
 	}
@@ -116,13 +182,13 @@ function Jukebox(){
 		document.getElementById("audioPlayer").addEventListener("ended", function(){
 		nextIndex = getIndex()	
 		if (nextIndex < (audioFileList.length-1)) {
-			audioPlayer.src = audioFileList[nextIndex += 1].tracklocation
-			document.getElementById("track" + (nextIndex += 1)).classList.remove("currentTrack")
-			document.getElementById("track" + (nextIndex += 2)).classList.add("currentTrack")
+			audioPlayer.src = audioFileList[nextIndex + 1].tracklocation
+			document.getElementById("track" + (nextIndex + 1)).classList.remove("currentTrack")
+			document.getElementById("track" + (nextIndex + 2)).classList.add("currentTrack")
 		}
 		else {
 			audioPlayer.src = audioFileList[0].tracklocation
-			document.getElementById("track" + (nextIndex += 1)).classList.remove("currentTrack")
+			document.getElementById("track" + (nextIndex + 1)).classList.remove("currentTrack")
 			document.getElementById("track1").classList.add("currentTrack")
 		}
 		audioPlayer.play()
