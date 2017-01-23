@@ -16,3 +16,7 @@ body {
 	clear: both;
 
 }
+
+.audioElement {
+	width: 700px;
+}
