@@ -14,7 +14,41 @@ function getAudioPlayer(){
 	newAudioFile("10. I Know You Rider", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t10.mp3")
 	newAudioFile("11. Casey Jones", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t11.mp3")
 	nextTrack()
+
+	var newTrackButton = document.createElement("div")
+	newTrackButton.setAttribute("id", "newTrackButton")
+	newTrackButton.classList.add("addButton")
+	document.getElementById("mainBody").appendChild(newTrackButton)
+	newTrackButton.innerHTML = "<h1>Add a Track</h1>"
+	newTrackButton.addEventListener("click", function(){
+		newTrack = prompt("Please enter the name of the track you wish to add.")
+		newLocation = prompt("Paste the full URL of the track here.")
+		newAudioFile(newTrack, newLocation)
+	})
+
+	var pauseButton = document.createElement("div")
+	pauseButton.setAttribute("id", "pauseButton")
+	pauseButton.classList.add("controlButton")
+	document.getElementById("mainBody").appendChild(pauseButton)
+	pauseButton.innerHTML = "<h1>Pause</h1>"
+	pauseButton.addEventListener("click", function(){
+		audioPlayer.pause()
+	})
+
+	var playButton = document.createElement("div")
+	playButton.setAttribute("id", "playButton")
+	playButton.classList.add("controlButton")
+	document.getElementById("mainBody").appendChild(playButton)
+	playButton.innerHTML = "<h1>Play</h1>"
+	playButton.addEventListener("click", function(){
+		audioPlayer.play()
+	})
+
+
 }
+
+
+
 
 var audioFileList = []
 
@@ -33,10 +67,10 @@ function AddAudioFile(trackname, tracklocation) {
 	document.getElementById("mainBody").appendChild(newDiv)
 	newDiv.innerHTML = "<h4>" + this.trackname + "</h4>"
 
-	makeClickable(this.tracklocation)
+	makeClickable(this.tracklocation, this.trackID)
 	
-	function makeClickable(place){
-		document.getElementById("track" + trackCounter).addEventListener("click", function(){
+	function makeClickable(place, trackID){
+		document.getElementById("track"+trackCounter).addEventListener("click", function(){
 			audioPlayer.src = place
 			audioPlayer.play()
 		})

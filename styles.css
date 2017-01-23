@@ -17,6 +17,32 @@ body {
 
 }
 
+.addButton {
+	display: block;
+	width: 250px;
+	height: 250px;
+	background-color: red;
+	left: 50%;
+	top: 50%;
+	position: absolute;
+	border-color: yellow;
+	border-width: 3px;
+	border-style: solid;
+	clear: both;
+}
+.controlButton {
+	display: inline-block;
+	width: 80px;
+	height: 50px;
+	background-color: yellow;
+	float: top;
+	border-color: red;
+	border-width: 3px;
+	border-style: solid;
+	text-align: center;
+	clear: both;
+
+}
 .audioElement {
 	width: 700px;
 }
