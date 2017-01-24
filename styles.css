@@ -27,11 +27,6 @@ body {
 .audioElement {
 	width: 700px;
 	position: relative;
-	top: 0%;
-}
-
-i {
-	position: absolute;
 }
 
 .playerBody {
