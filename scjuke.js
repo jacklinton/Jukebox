@@ -139,9 +139,9 @@ function Jukebox() {
 			playlist.highlightTrack(this.nextIndex, "back")
 		}
 		else {
-			currentIndexID = audioFileList[this.nextIndex - 1]["tracklocation"]
+			currentIndexID = audioFileList[audioFileList.length - 1]["tracklocation"]
 			playlist.displayInfo(currentIndexID)
-			SC.stream("/tracks/" + audioFileList[this.nextIndex - 1]["tracklocation"]).then(function(player){
+			SC.stream("/tracks/" + audioFileList[audioFileList.length - 1]["tracklocation"]).then(function(player){
 				myPlayer = player
 				player.play()
 				player.on("finish", function(){
