@@ -17,7 +17,10 @@ SC.initialize({
 			pulledList = [tracks];
 		});
 
-function getAudioPlayer(){
+$(document).ready(function(){
+		getAudioPlayer()
+
+		function getAudioPlayer(){
 
 		document.getElementById("playerBody").innerHTML = "<h4>Click any track on the playlist to begin listening!</h4>"
 
@@ -59,7 +62,7 @@ function getAudioPlayer(){
 			newTrackButton.addEventListener("click", jukebox.addTrack)
 
 }
-
+})
 function Jukebox() {
 
 	this.play = function(){
@@ -324,7 +327,7 @@ function Playlist() {
 
 	 this.displayInfo = function(currentIndexID) {
 		this.nextIndex = playlist.getIndex(currentIndexID)
-		$("#displayArtist").empty
+		$("#displayArtist").empty()
 		$("#displayArtist").append("<p>Artist: " + pulledList[0][this.nextIndex]["user"]["username"] + "</p>")
 		$("#displayArtist").append("<p>Title: " + pulledList[0][this.nextIndex]["title"] + "</p>")
 		$("#displayArtist").append("<p>Description: " + pulledList[0][this.nextIndex]["description"], "</p>")
