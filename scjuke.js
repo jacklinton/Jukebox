@@ -66,12 +66,13 @@ function Jukebox() {
 		this.nextIndex = playlist.getIndex()
 		if (this.nextIndex == -1) {
 			currentIndexID = audioFileList[0]["tracklocation"]
+			playlist.displayInfo(currentIndexID)
 			SC.stream('/tracks/' + audioFileList[0]["tracklocation"]).then(function(player){
   				myPlayer = player
   				player.play()
   				player.on("finish", function(){
 					playlist.nextTrack()
-					playlist.displayInfo()
+					//playlist.displayInfo() <--- need to design this function
 				})
   			})
 
@@ -82,6 +83,7 @@ function Jukebox() {
 		else {
 			this.id = audioFileList[this.nextIndex]["tracklocation"]
 			currentIndexID = this.id
+			playlist.displayInfo(currentIndexID)
 			SC.stream("/tracks/" + this.id).then(function(player){
   					myPlayer = player
   					player.play()
@@ -95,9 +97,13 @@ function Jukebox() {
 
 	this.pause = function(){
 		this.nextIndex = playlist.getIndex()
+		currentIndexID = audioFileList[this.nextIndex]["tracklocation"]
 		if (this.nextIndex != -1) {
 				myPlayer.pause()
-			
+				myPlayer.on("play-resume", function(){
+					jukebox.play
+				})
+				playlist.highlightTrack((this.nextIndex+1), "back")
 		} else {
 			alert("A track must be loaded first!")
 		}
@@ -107,6 +113,7 @@ function Jukebox() {
 		this.nextIndex = playlist.getIndex()
 		if (this.nextIndex != -1 && this.nextIndex != 0) {
 			currentIndexID = audioFileList[this.nextIndex - 1]["tracklocation"]
+			playlist.displayInfo(currentIndexID)
 			SC.stream("/tracks/" + audioFileList[this.nextIndex - 1]["tracklocation"]).then(function(player){
 				myPlayer = player
 				player.play()
@@ -118,6 +125,7 @@ function Jukebox() {
 		}
 		else if (this.nextIndex == 0){
 			currentIndexID = audioFileList[audioFileList.length - 1]["tracklocation"]
+			playlist.displayInfo(currentIndexID)
 			SC.stream("/tracks/" + audioFileList[audioFileList.length - 1]["tracklocation"]).then(function(player){
 				myPlayer = player
 				player.play()
@@ -129,6 +137,7 @@ function Jukebox() {
 		}
 		else {
 			currentIndexID = audioFileList[this.nextIndex - 1]["tracklocation"]
+			playlist.displayInfo(currentIndexID)
 			SC.stream("/tracks/" + audioFileList[this.nextIndex - 1]["tracklocation"]).then(function(player){
 				myPlayer = player
 				player.play()
@@ -144,6 +153,7 @@ function Jukebox() {
 		this.nextIndex = playlist.getIndex()
 		if (this.nextIndex != -1 && this.nextIndex != (audioFileList.length - 1)) {
 			currentIndexID = audioFileList[this.nextIndex + 1]["tracklocation"]
+			playlist.displayInfo(currentIndexID)
 			SC.stream("/tracks/" + audioFileList[this.nextIndex + 1]["tracklocation"]).then(function(player){
 				myPlayer = player
 				player.play()
@@ -155,6 +165,7 @@ function Jukebox() {
 		}
 		else if (this.nextIndex == (audioFileList.length - 1)){
 			currentIndexID = audioFileList[0]["tracklocation"]
+			playlist.displayInfo(currentIndexID)
 			SC.stream("/tracks/" + audioFileList[0]["tracklocation"]).then(function(player){
 				myPlayer = player
 				player.play()
@@ -166,6 +177,7 @@ function Jukebox() {
 		}
 		else {
 			currentIndexID = audioFileList[0]["tracklocation"]
+			playlist.displayInfo(currentIndexID)
 			SC.stream("/tracks/" + audioFileList[0]["tracklocation"]).then(function(player){
 				myPlayer = player
 				player.play()
@@ -221,6 +233,7 @@ function Playlist() {
 				}
 					document.getElementById(divID).classList.add("currentTrack")
 					currentIndexID = place
+					playlist.displayInfo(currentIndexID)
 					SC.stream("/tracks/" + place).then(function(player){
 						myPlayer = player
 						player.play()
@@ -240,6 +253,7 @@ function Playlist() {
 			document.getElementById("track" + (this.nextIndex + 1)).classList.remove("currentTrack")
 			document.getElementById("track" + (this.nextIndex + 2)).classList.add("currentTrack")
 			currentIndexID = audioFileList[this.nextIndex + 1]["tracklocation"]
+			playlist.displayInfo(currentIndexID)
 			SC.stream("/tracks/" + audioFileList[this.nextIndex + 1]["tracklocation"]).then(function(player){
 				myPlayer = player
 				player.on("finish", function(){
@@ -253,6 +267,7 @@ function Playlist() {
 			document.getElementById("track" + (this.nextIndex + 1)).classList.remove("currentTrack")
 			document.getElementById("track1").classList.add("currentTrack")
 			currentIndexID = audioFileList[0]["tracklocation"]
+			playlist.displayInfo(currentIndexID)
 			SC.stream("/tracks/" + audioFileList[0]["tracklocation"]).then(function(player){
 				myPlayer = player
 				player.on("finish", function(){
@@ -305,7 +320,18 @@ function Playlist() {
 				playlist.newAudioFile(this.track, this.location)
 				j += 1
 			}
-		}
+	}
+
+	 this.displayInfo = function(currentIndexID) {
+		this.nextIndex = playlist.getIndex(currentIndexID)
+		$("#displayArtist").empty
+		$("#displayArtist").append("<p>Artist: " + pulledList[0][this.nextIndex]["user"]["username"] + "</p>")
+		$("#displayArtist").append("<p>Title: " + pulledList[0][this.nextIndex]["title"] + "</p>")
+		$("#displayArtist").append("<p>Description: " + pulledList[0][this.nextIndex]["description"], "</p>")
+		$("#displayArtist").append("<p>Genera: " + pulledList[0][this.nextIndex]["genera"] + "</p>")
+		$("#displayArtist").append("<p>Released: " + pulledList[0][this.nextIndex]["created_at"] + "</p>")
+		$("#displayArtist").append("<p>Artwork: <img src='" + pulledList[0][this.nextIndex]["user"]["avatar_url"] + "'>" + "</p>")
+	}
 }
 
 
