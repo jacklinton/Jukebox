@@ -58,12 +58,6 @@ function getAudioPlayer(){
 			newTrackButton.innerHTML = "<i class='glyphicon glyphicon-plus-sign'></i>"
 			newTrackButton.addEventListener("click", jukebox.addTrack)
 
-		downloadButton = document.createElement("div")
-			downloadButton.setAttribute("id", "downloadButton")
-			downloadButton.setAttribute("class", "btn btn-primary")
-			document.getElementById("playerBody").appendChild(downloadButton)
-			downloadButton.innerHTML = "<i class='glyphicon glyphicon-download-alt'</i>"
-			downloadButton.addEventListener("click", jukebox.downloadTrack)
 }
 
 function Jukebox() {
@@ -77,6 +71,7 @@ function Jukebox() {
   				player.play()
   				player.on("finish", function(){
 					playlist.nextTrack()
+					playlist.displayInfo()
 				})
   			})
 
