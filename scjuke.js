@@ -1,28 +1,27 @@
 var audioFileList = []
 var trackCounter = 0
-var audioPlayer = null
+var pulledList = []
+var currentIndexID = null
+var paused = false
 
 var jukebox = new Jukebox()
 var playlist = new Playlist() 
 
+SC.initialize({
+			client_id: 'fd4e76fc67798bfa742089ed619084a6'
+		});
+
+		SC.get('/tracks', {
+			full_name: "Jonathan Manness"
+		}).then(function(tracks){
+			pulledList = [tracks];
+		});
+
 function getAudioPlayer(){
 
-		document.getElementById("playerBody").innerHTML = "<h4>Click any track on the playlist to begin listening!</h4> <audio type='audio/mp3' controls id='audioPlayer' class='audioElement'></audio>"
-		audioPlayer = document.getElementById("audioPlayer")
+		document.getElementById("playerBody").innerHTML = "<h4>Click any track on the playlist to begin listening!</h4>"
 
-		playlist.nextTrack()
-
-		playlist.newAudioFile("Truckin", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t01.mp3")
-		playlist.newAudioFile("Loser", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t02.mp3")
-		playlist.newAudioFile("Hard To Handle", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t03.mp3")
-		playlist.newAudioFile("Me And Bobby McGee", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t04.mp3")
-		playlist.newAudioFile("Cold Rain And Snow", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t05.mp3")
-		playlist.newAudioFile("The Rub", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t06.mp3")
-		playlist.newAudioFile("Playing In The Band", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t07.mp3")
-		playlist.newAudioFile("Friend Of The Devil", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t08.mp3")
-		playlist.newAudioFile("China Cat Sunflower ->", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t09.mp3")
-		playlist.newAudioFile("I Know You Rider", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t10.mp3")
-		playlist.newAudioFile("Casey Jones", "https://www.archive.org/download/gd1971-04-25.sbd.matera.113038.sbeok.flac16/gd71-04-25d1t11.mp3")
+		playlist.createPlaylist()
 
 		playButton = document.createElement("div")
 			playButton.setAttribute("id", "playButton")
@@ -72,35 +71,76 @@ function Jukebox() {
 	this.play = function(){
 		this.nextIndex = playlist.getIndex()
 		if (this.nextIndex == -1) {
-			audioPlayer.src = audioFileList[0].tracklocation
-			audioPlayer.play()
+			currentIndexID = audioFileList[0]["tracklocation"]
+			SC.stream('/tracks/' + audioFileList[0]["tracklocation"]).then(function(player){
+  				myPlayer = player
+  				player.play()
+  				player.on("finish", function(){
+					playlist.nextTrack()
+				})
+  			})
+
 			playlist.highlightTrack(this.nextIndex, "next")
+
 		}
+
 		else {
-			audioPlayer.play()
+			this.id = audioFileList[this.nextIndex]["tracklocation"]
+			currentIndexID = this.id
+			SC.stream("/tracks/" + this.id).then(function(player){
+  					myPlayer = player
+  					player.play()
+  					player.on("finish", function(){
+					playlist.nextTrack()
+				})
+			})
 			playlist.highlightTrack(this.nextIndex, "next")
 		}
 	}
 
 	this.pause = function(){
-		audioPlayer.pause()
+		this.nextIndex = playlist.getIndex()
+		if (this.nextIndex != -1) {
+				myPlayer.pause()
+			
+		} else {
+			alert("A track must be loaded first!")
+		}
 	}
 
 	this.back = function(){
 		this.nextIndex = playlist.getIndex()
 		if (this.nextIndex != -1 && this.nextIndex != 0) {
-			audioPlayer.src = audioFileList[this.nextIndex - 1].tracklocation
-			audioPlayer.play()
+			currentIndexID = audioFileList[this.nextIndex - 1]["tracklocation"]
+			SC.stream("/tracks/" + audioFileList[this.nextIndex - 1]["tracklocation"]).then(function(player){
+				myPlayer = player
+				player.play()
+				player.on("finish", function(){
+					playlist.nextTrack()
+				})
+			})
 			playlist.highlightTrack(this.nextIndex, "back")
 		}
 		else if (this.nextIndex == 0){
-			audioPlayer.src = audioFileList[audioFileList.length - 1].tracklocation
-			audioPlayer.play()
+			currentIndexID = audioFileList[audioFileList.length - 1]["tracklocation"]
+			SC.stream("/tracks/" + audioFileList[audioFileList.length - 1]["tracklocation"]).then(function(player){
+				myPlayer = player
+				player.play()
+				player.on("finish", function(){
+					playlist.nextTrack()
+				})
+			})
 			playlist.highlightTrack(this.nextIndex, "back")
 		}
 		else {
-			audioPlayer.src = audioFileList[audioFileList.length - 1].tracklocation
-			audioPlayer.play()
+			currentIndexID = audioFileList[this.nextIndex - 1]["tracklocation"]
+			SC.stream("/tracks/" + audioFileList[this.nextIndex - 1]["tracklocation"]).then(function(player){
+				myPlayer = player
+				player.play()
+				player.on("finish", function(){
+					playlist.nextTrack()
+				})
+			})
 			playlist.highlightTrack(this.nextIndex, "back")
 		}
 	}
@@ -108,25 +148,43 @@ function Jukebox() {
 	this.next = function(){
 		this.nextIndex = playlist.getIndex()
 		if (this.nextIndex != -1 && this.nextIndex != (audioFileList.length - 1)) {
-			audioPlayer.src = audioFileList[this.nextIndex + 1].tracklocation
-			audioPlayer.play()
+			currentIndexID = audioFileList[this.nextIndex + 1]["tracklocation"]
+			SC.stream("/tracks/" + audioFileList[this.nextIndex + 1]["tracklocation"]).then(function(player){
+				myPlayer = player
+				player.play()
+				player.on("finish", function(){
+					playlist.nextTrack()
+				})
+			})
 			playlist.highlightTrack(this.nextIndex, "next")
 		}
 		else if (this.nextIndex == (audioFileList.length - 1)){
-			audioPlayer.src = audioFileList[0].tracklocation
-			audioPlayer.play()
+			currentIndexID = audioFileList[0]["tracklocation"]
+			SC.stream("/tracks/" + audioFileList[0]["tracklocation"]).then(function(player){
+				myPlayer = player
+				player.play()
+				player.on("finish", function(){
+					playlist.nextTrack()
+				})
+			})
 			playlist.highlightTrack(this.nextIndex, "next")
 		}
 		else {
-			audioPlayer.src = audioFileList[0].tracklocation
-			audioPlayer.play()
+			currentIndexID = audioFileList[0]["tracklocation"]
+			SC.stream("/tracks/" + audioFileList[0]["tracklocation"]).then(function(player){
+				myPlayer = player
+				player.play()
+				player.on("finish", function(){
+					playlist.nextTrack()
+				})
+			})
 			playlist.highlightTrack(this.nextIndex, "next")
 		}
 	}
 
 	this.addTrack = function(){
 		newTrack = prompt("Please enter the name of the track you wish to add.")
-		newLocation = prompt("Paste the full URL of the track here.")
+		newLocation = prompt("Paste the track ID.")
 		playlist.newAudioFile(newTrack, newLocation)
 	}
 
@@ -152,43 +210,64 @@ function Playlist() {
 	
 		var newDiv = document.createElement("div")
 		newDiv.setAttribute("id", "track"+ trackCounter) 
-		trackID = newDiv.getAttribute("id")
+		this.divID = newDiv.getAttribute("id")
 		newDiv.classList.add("audioFile")
 		document.getElementById("playList").appendChild(newDiv)
 		newDiv.innerHTML = "<h4>" + trackCounter + ". " + this.trackname + "</h4>"
 
-		makeClickable(this.tracklocation, this.trackID)
+		makeClickable(this.tracklocation, this.divID)
 	
-		function makeClickable(place, trackID){
+		function makeClickable(place, divID){
 			document.getElementById("track"+trackCounter).addEventListener("click", function(){
 				this.index = audioFileList.findIndex(i => i.tracklocation == place)
-				this.prevTrack = audioFileList.findIndex(i => i.tracklocation == audioPlayer.src)
+				this.prevTrack = audioFileList.findIndex(i => i.tracklocation == currentIndexID)
 				if (this.prevTrack != -1) {
 					document.getElementById("track"+(this.prevTrack+1)).classList.remove("currentTrack")
 				}
-				document.getElementById("track"+(this.index+1)).classList.add("currentTrack")
-				audioPlayer.src = place
-				audioPlayer.play()
+					document.getElementById(divID).classList.add("currentTrack")
+					currentIndexID = place
+					SC.stream("/tracks/" + place).then(function(player){
+						myPlayer = player
+						player.play()
+						player.on("finish", function(){
+							playlist.nextTrack()
+						})
+					})
+				
 			})
 
 		}
 	}
 
 	this.nextTrack = function() {
-		document.getElementById("audioPlayer").addEventListener("ended", function(){
 		this.nextIndex = playlist.getIndex()
-		if (this.nextIndex < (audioFileList.length-1)) {
-			audioPlayer.src = audioFileList[this.nextIndex + 1].tracklocation
+		if (this.nextIndex != -1 && this.nextIndex < (audioFileList.length - 1)) {
 			document.getElementById("track" + (this.nextIndex + 1)).classList.remove("currentTrack")
 			document.getElementById("track" + (this.nextIndex + 2)).classList.add("currentTrack")
+			currentIndexID = audioFileList[this.nextIndex + 1]["tracklocation"]
+			SC.stream("/tracks/" + audioFileList[this.nextIndex + 1]["tracklocation"]).then(function(player){
+				myPlayer = player
+				player.on("finish", function(){
+					playlist.nextTrack()
+				})
+				player.play()
+			})
+			
 		}
 		else {
-			audioPlayer.src = audioFileList[0].tracklocation
 			document.getElementById("track" + (this.nextIndex + 1)).classList.remove("currentTrack")
 			document.getElementById("track1").classList.add("currentTrack")
+			currentIndexID = audioFileList[0]["tracklocation"]
+			SC.stream("/tracks/" + audioFileList[0]["tracklocation"]).then(function(player){
+				myPlayer = player
+				player.on("finish", function(){
+					playlist.nextTrack()
+				})
+				player.play()	
+			})
+			
 		}
-		audioPlayer.play()
-		})
+		
 	}
 
 	this.highlightTrack = function(nextIndex, direction){
@@ -219,9 +298,19 @@ function Playlist() {
 	}
 
 	this.getIndex = function() {
-		this.index = audioFileList.findIndex(i => i.tracklocation == audioPlayer.src)
+		this.index = audioFileList.findIndex(i => i.tracklocation == currentIndexID)
 		return this.index
 	}
+
+	this.createPlaylist = function(){
+			var j = 0
+			while (j < 15){
+				this.track = pulledList[0][j]["title"]
+				this.location = pulledList[0][j]["id"]
+				playlist.newAudioFile(this.track, this.location)
+				j += 1
+			}
+		}
 }
 
 
