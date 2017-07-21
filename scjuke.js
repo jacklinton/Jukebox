@@ -9,22 +9,22 @@ var playlist = new Playlist()
 
 SC.initialize({
 			client_id: 'fd4e76fc67798bfa742089ed619084a6'
-		});
+});
 
-		SC.get('/tracks', {
-			full_name: "Jonathan Manness"
-		}).then(function(tracks){
-			pulledList = [tracks];
-		});
+SC.get('/tracks', {
+	q: "Jon Manness"
+}).then(function(tracks){
+	pulledList = [tracks];
 
-$(document).ready(function(){
-		getAudioPlayer()
 
-		function getAudioPlayer(){
+
+	getAudioPlayer()
+
+	function getAudioPlayer(){
 
 		document.getElementById("playerBody").innerHTML = "<h4>Click any track on the playlist to begin listening!</h4>"
 
-		playlist.createPlaylist()
+		
 
 		playButton = document.createElement("div")
 			playButton.setAttribute("id", "playButton")
@@ -60,9 +60,9 @@ $(document).ready(function(){
 			document.getElementById("playerBody").appendChild(newTrackButton)
 			newTrackButton.innerHTML = "<i class='glyphicon glyphicon-plus-sign'></i>"
 			newTrackButton.addEventListener("click", jukebox.addTrack)
-
-}
-})
+		playlist.createPlaylist()
+	}
+});
 function Jukebox() {
 
 	this.play = function(){
@@ -71,7 +71,7 @@ function Jukebox() {
 			currentIndexID = audioFileList[0]["tracklocation"]
 			playlist.displayInfo(currentIndexID)
 			SC.stream('/tracks/' + audioFileList[0]["tracklocation"]).then(function(player){
-  				myPlayer = player
+  				var myPlayer = player
   				player.play()
   				player.on("finish", function(){
 					playlist.nextTrack()
@@ -328,7 +328,7 @@ function Playlist() {
 	 this.displayInfo = function(currentIndexID) {
 		this.nextIndex = playlist.getIndex(currentIndexID)
 		$("#displayArtist").empty()
-		$("#displayArtist").append("<p>Artist: " + pulledList[0][this.nextIndex]["user"]["username"] + "</p>")
+		$("#displayArtist").append("<p>Artist: " + "<a href='" + pulledList[0][this.nextIndex]["user"]["permalink_url"] + "' target='_blank' >" + pulledList[0][this.nextIndex]["user"]["username"] + "</a>" +  "</p>")
 		$("#displayArtist").append("<p>Title: " + pulledList[0][this.nextIndex]["title"] + "</p>")
 		$("#displayArtist").append("<p>Description: " + pulledList[0][this.nextIndex]["description"], "</p>")
 		$("#displayArtist").append("<p>Genera: " + pulledList[0][this.nextIndex]["genera"] + "</p>")
