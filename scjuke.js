@@ -89,8 +89,8 @@ function Jukebox() {
 			playlist.displayInfo(currentIndexID)
 			SC.stream("/tracks/" + this.id).then(function(player){
   					myPlayer = player
-  					player.play()
-  					player.on("finish", function(){
+  					myPlayer.play()
+  					myPlayer.on("finish", function(){
 					playlist.nextTrack()
 				})
 			})
